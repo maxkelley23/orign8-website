@@ -1,0 +1,7 @@
+{
+  "name": "Orign8",
+  "description": "Next-generation Mortgage Tech platform leveraging Voice AI for lender retention and growth. Built by lenders, for lenders.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

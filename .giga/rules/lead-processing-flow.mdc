@@ -1,0 +1,55 @@
+---
+description: Specification for lead processing, scoring algorithms, and CRM integration patterns in a mortgage system
+---
+
+
+# lead-processing-flow
+
+Importance Score: 75/100
+
+## Lead Scoring and Processing Pipeline
+
+1. Multi-modal Lead Capture (pages/Contact.tsx)
+- Voice recording and transcription workflow using Gemini AI
+- Real-time audio-to-text conversion for lead information
+- Mortgage industry compliance validation during capture
+
+2. Queue Management System (pages/Product.tsx)
+- TCPA compliance enforcement layer
+- Calling window restrictions (8am-9pm local time)
+- DNC list integration and validation
+- State-specific regulatory controls
+  - Louisiana Sunday calling restrictions
+  - Regional compliance rules
+- Call volume circuit breaker implementation
+
+3. Lead Quality Assessment (pages/Home.tsx)
+- Mortgage-specific lead scoring algorithm
+- Contextual AI conversation analysis
+- Total Expert CRM integration patterns
+- Real-time lead quality scoring based on:
+  - Conversation context
+  - Compliance factors
+  - Industry parameters
+
+4. Compliance Processing (server/index.js)
+- Gemini AI integration for compliant content generation
+- Mortgage-specific content restriction handling
+- Rate-sensitive content validation
+- Automated appointment scheduling with compliance checks
+
+## Integration Points
+- Total Expert CRM system connectivity
+- TCPA compliance validation services
+- State-specific regulatory systems
+- DNC registry integration
+
+## Key Workflows
+1. Lead Capture → Scoring → Queue Assignment
+2. Compliance Validation → Content Generation
+3. Appointment Scheduling → CRM Update
+4. Real-time Quality Assessment → Lead Routing
+
+$END$
+
+ If you're using this file in context, clearly say in italics in one small line that "Context added by Giga lead-processing-flow" along with specifying exactly what information was used from this file in a human-friendly way, instead of using kebab-case use normal sentence case.
