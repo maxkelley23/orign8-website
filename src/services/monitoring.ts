@@ -39,7 +39,8 @@ const config: MonitoringConfig = {
     dsn: import.meta.env.VITE_SENTRY_DSN,
     environment: import.meta.env.MODE || 'development',
     release: import.meta.env.VITE_APP_VERSION,
-    enabled: !!import.meta.env.VITE_SENTRY_DSN && import.meta.env.PROD,
+    // Enable in production and staging (when DSN is provided)
+    enabled: !!import.meta.env.VITE_SENTRY_DSN && !import.meta.env.DEV,
 };
 
 // =============================================================================
@@ -84,15 +85,30 @@ export function captureError(error: Error, context?: ErrorContext): void {
     if (import.meta.env.DEV) {
         console.error('[Monitoring] Error captured:', error);
         if (context) {
-            console.error('[Monitoring] Context:', context);
+            // Don't log user context (PII) even in dev
+            const { user: _user, ...safeContext } = context;
+            console.error('[Monitoring] Context:', safeContext);
         }
     }
 
     // Send to Sentry if configured
     if (config.enabled) {
-        Sentry.captureException(error, {
-            extra: context?.extra,
-            tags: context?.tags,
+        Sentry.withScope((scope) => {
+            // Set user context if provided
+            if (context?.user) {
+                scope.setUser(context.user);
+            }
+            // Set tags
+            if (context?.tags) {
+                Object.entries(context.tags).forEach(([key, value]) => {
+                    scope.setTag(key, value);
+                });
+            }
+            // Set extra context
+            if (context?.extra) {
+                scope.setExtras(context.extra);
+            }
+            Sentry.captureException(error);
         });
     }
 }
@@ -175,29 +191,50 @@ export function startTransaction(name: string, op: string): { finish: () => void
 // GLOBAL ERROR HANDLERS
 // =============================================================================
 
+// Track if handlers have been initialized to prevent duplicates
+let globalHandlersInitialized = false;
+
 /**
- * Initialize global error handlers
+ * Handle unhandled promise rejections
+ */
+function handleUnhandledRejection(event: PromiseRejectionEvent): void {
+    // Preserve the original error if it's an Error instance
+    const error = event.reason instanceof Error
+        ? event.reason
+        : new Error(String(event.reason));
+
+    captureError(error, {
+        tags: { type: 'unhandledrejection' },
+        extra: { originalReason: event.reason },
+    });
+}
+
+/**
+ * Handle global errors
+ */
+function handleGlobalError(event: ErrorEvent): void {
+    captureError(event.error || new Error(event.message), {
+        tags: { type: 'global-error' },
+        extra: {
+            filename: event.filename,
+            lineno: event.lineno,
+            colno: event.colno,
+        },
+    });
+}
+
+/**
+ * Initialize global error handlers (idempotent - safe to call multiple times)
  */
 export function initGlobalErrorHandlers(): void {
-    // Unhandled promise rejections
-    window.addEventListener('unhandledrejection', (event) => {
-        captureError(
-            new Error(`Unhandled Promise Rejection: ${event.reason}`),
-            { tags: { type: 'unhandledrejection' } }
-        );
-    });
+    if (globalHandlersInitialized) {
+        return;
+    }
 
-    // Global errors
-    window.addEventListener('error', (event) => {
-        captureError(event.error || new Error(event.message), {
-            tags: { type: 'global-error' },
-            extra: {
-                filename: event.filename,
-                lineno: event.lineno,
-                colno: event.colno,
-            },
-        });
-    });
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    window.addEventListener('error', handleGlobalError);
+
+    globalHandlersInitialized = true;
 }
 
 // =============================================================================

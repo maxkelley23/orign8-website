@@ -16,8 +16,8 @@ export default defineConfig({
     }
   },
   build: {
-    // Enable source maps for debugging (disable in production if needed)
-    sourcemap: true,
+    // Hidden source maps: uploaded to Sentry but not publicly accessible
+    sourcemap: 'hidden',
     // Target modern browsers for smaller bundle
     target: 'es2020',
     // Chunk size warning threshold

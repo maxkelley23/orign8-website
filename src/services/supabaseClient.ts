@@ -54,13 +54,8 @@ export const submitLead = async (data: ContactFormData): Promise<SubmitLeadResul
     // If Supabase is not configured, use mock mode for development
     if (!supabase) {
         console.warn('[Supabase] Running in mock mode - lead not actually saved');
-        console.log('[Supabase] Mock submission data:', {
-            firstName: data.firstName,
-            lastName: data.lastName,
-            email: data.email,
-            company: data.company,
-            // Don't log sensitive fields in full
-        });
+        // Log non-PII data only
+        console.log('[Supabase] Mock submission - company:', data.company || 'N/A');
 
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 800));
@@ -95,7 +90,7 @@ export const submitLead = async (data: ContactFormData): Promise<SubmitLeadResul
             console.error('[Supabase] Insert error:', errorMsg);
             captureError(new Error(errorMsg), {
                 tags: { operation: 'lead-submit' },
-                extra: { email: data.email },
+                // Don't include PII in error capture
             });
             return {
                 success: false,

@@ -39,6 +39,10 @@ const isDevelopment = import.meta.env.DEV;
 const useGA4 = !!GA4_MEASUREMENT_ID;
 const usePlausible = !!PLAUSIBLE_DOMAIN;
 
+// Track script loading state
+let ga4Ready = false;
+let plausibleReady = false;
+
 // =============================================================================
 // GA4 INTEGRATION
 // =============================================================================
@@ -54,38 +58,74 @@ declare global {
 /**
  * Initialize GA4 tracking (call once on app startup)
  */
-export function initGA4(): void {
-    if (!useGA4 || !isProduction) return;
+export function initGA4(): Promise<void> {
+    return new Promise((resolve) => {
+        if (!useGA4 || !isProduction) {
+            resolve();
+            return;
+        }
 
-    // Load GA4 script
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}`;
-    document.head.appendChild(script);
+        // Initialize gtag before script loads to queue events
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function gtag(...args: unknown[]) {
+            window.dataLayer?.push(args);
+        };
 
-    // Initialize gtag
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function gtag(...args: unknown[]) {
-        window.dataLayer?.push(args);
-    };
-    window.gtag('js', new Date());
-    window.gtag('config', GA4_MEASUREMENT_ID, {
-        send_page_view: false, // We'll track manually for SPA
+        // Load GA4 script
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}`;
+
+        script.onload = () => {
+            window.gtag?.('js', new Date());
+            window.gtag?.('config', GA4_MEASUREMENT_ID, {
+                send_page_view: false, // We'll track manually for SPA
+            });
+            ga4Ready = true;
+            resolve();
+        };
+
+        script.onerror = () => {
+            if (isDevelopment) {
+                console.warn('[Analytics] Failed to load GA4 script');
+            }
+            resolve();
+        };
+
+        document.head.appendChild(script);
     });
 }
 
 /**
  * Initialize Plausible tracking (call once on app startup)
  */
-export function initPlausible(): void {
-    if (!usePlausible || !isProduction) return;
+export function initPlausible(): Promise<void> {
+    return new Promise((resolve) => {
+        if (!usePlausible || !isProduction) {
+            resolve();
+            return;
+        }
 
-    // Load Plausible script
-    const script = document.createElement('script');
-    script.defer = true;
-    script.dataset.domain = PLAUSIBLE_DOMAIN;
-    script.src = 'https://plausible.io/js/script.js';
-    document.head.appendChild(script);
+        // Load Plausible script
+        const script = document.createElement('script');
+        script.defer = true;
+        script.dataset.domain = PLAUSIBLE_DOMAIN;
+        script.src = 'https://plausible.io/js/script.js';
+
+        script.onload = () => {
+            plausibleReady = true;
+            resolve();
+        };
+
+        script.onerror = () => {
+            if (isDevelopment) {
+                console.warn('[Analytics] Failed to load Plausible script');
+            }
+            resolve();
+        };
+
+        document.head.appendChild(script);
+    });
 }
 
 // =============================================================================
@@ -93,52 +133,74 @@ export function initPlausible(): void {
 // =============================================================================
 
 /**
+ * Sanitize properties to remove PII before logging
+ */
+function sanitizeForLog(properties: Record<string, string | number | boolean>): Record<string, string | number | boolean> {
+    const piiKeys = ['email', 'phone', 'name', 'firstName', 'lastName', 'address', 'nmls', 'nmlsId'];
+    const sanitized: Record<string, string | number | boolean> = {};
+
+    for (const [key, value] of Object.entries(properties)) {
+        if (piiKeys.some(pii => key.toLowerCase().includes(pii.toLowerCase()))) {
+            sanitized[key] = '[REDACTED]';
+        } else {
+            sanitized[key] = value;
+        }
+    }
+
+    return sanitized;
+}
+
+/**
  * Track a custom event
  */
 export function trackEvent(event: AnalyticsEvent): void {
     const { name, properties = {} } = event;
 
-    // Log in development
+    // Log sanitized version in development
     if (isDevelopment) {
-        console.log('[Analytics] Event:', name, properties);
+        console.log('[Analytics] Event:', name, sanitizeForLog(properties));
     }
 
-    // GA4 tracking
-    if (useGA4 && window.gtag) {
+    // GA4 tracking (check ready state)
+    if (useGA4 && ga4Ready && window.gtag) {
         window.gtag('event', name, properties);
     }
 
-    // Plausible tracking
-    if (usePlausible && window.plausible) {
+    // Plausible tracking (check ready state)
+    if (usePlausible && plausibleReady && window.plausible) {
         window.plausible(name, { props: properties });
     }
 }
 
 /**
  * Track a page view (for SPA routing)
+ * Note: Plausible auto-tracks initial pageview, so we only trigger for SPA navigation
  */
-export function trackPageView(event: PageViewEvent): void {
-    const { path, title, referrer } = event;
+let initialPageViewTracked = false;
 
-    // Log in development
+export function trackPageView(event: PageViewEvent): void {
+    const { path, title } = event;
+
+    // Log in development (path is not PII)
     if (isDevelopment) {
-        console.log('[Analytics] PageView:', path, { title, referrer });
+        console.log('[Analytics] PageView:', path);
     }
 
-    // GA4 page view
-    if (useGA4 && window.gtag) {
+    // GA4 page view (check ready state)
+    if (useGA4 && ga4Ready && window.gtag) {
         window.gtag('event', 'page_view', {
             page_path: path,
             page_title: title || document.title,
-            page_referrer: referrer,
         });
     }
 
-    // Plausible automatically tracks page views via script
-    // But we can trigger manually for SPA navigation
-    if (usePlausible && window.plausible) {
+    // Plausible: Only trigger manual pageview for SPA navigation (not initial load)
+    // Plausible script auto-tracks the initial pageview
+    if (usePlausible && plausibleReady && window.plausible && initialPageViewTracked) {
         window.plausible('pageview');
     }
+
+    initialPageViewTracked = true;
 }
 
 // =============================================================================
@@ -233,16 +295,16 @@ export function trackDemoInteraction(action: string): void {
 
 /**
  * Initialize analytics (call once on app startup)
+ * Returns a promise that resolves when all analytics scripts are loaded
  */
-export function initAnalytics(): void {
+export async function initAnalytics(): Promise<void> {
     if (isDevelopment) {
         console.log('[Analytics] Initializing in development mode');
         console.log('[Analytics] GA4:', useGA4 ? 'configured' : 'not configured');
         console.log('[Analytics] Plausible:', usePlausible ? 'configured' : 'not configured');
     }
 
-    initGA4();
-    initPlausible();
+    await Promise.all([initGA4(), initPlausible()]);
 }
 
 // =============================================================================
