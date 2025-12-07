@@ -1,61 +1,60 @@
 ---
-description: Analyzes data models and relationships for mortgage lead management, CRM integration, and compliance tracking
+description: Specifies data models and relationships for mortgage industry lead management and compliance tracking
 ---
 
 
 # data-models-relationships
 
-Core Data Models:
+## Core Data Structures
 
-1. Lead Management Model
-- Lead qualification status tracking
+### Lead Management Model (Importance: 85)
+- Lead entity with NMLS-specific validation fields
+- Mortgage qualification data points
+- Company-specific routing identifiers
+- Voice interaction tracking metadata
+- Transcription state tracking
+- Compliance verification flags
+
+### Contact Information Schema (Importance: 80)
+File: pages/Contact.tsx
+- TCPA compliance fields
+- Voice consent tracking
 - NMLS ID association
-- Contact attempt history
-- Lead scoring metrics
-- State/timezone metadata for compliance
+- Lead source attribution
+- Communication preference flags
+- Mortgage-specific contact requirements
 
-2. Contact Information Model
-- Phone number validation state
-- TCPA consent tracking
-- DNC status flags
-- Preferred contact windows
-- Communication history
+### Compliance Records (Importance: 90)
+File: server/index.js
+- Voice communication consent records
+- TCPA verification timestamps
+- NMLS validation history
+- Rate limiting tracking
+- Compliance audit trail
+- Transcription compliance metadata
 
-3. Compliance Records
-- TCPA compliance timestamps
-- State-specific regulatory flags
-- Calling window violations
-- DNC validation results
-- Consent revocation tracking
+### CRM Integration Model (Importance: 75)
+File: services/supabaseClient.ts
+- Mortgage-specific lead transformation mappings
+- Industry-compliant data transfer schema
+- NMLS verification status
+- Lead qualification state tracking
+- Voice interaction history
+- Compliance verification status
 
-4. CRM Integration Model
-- Total Expert bi-directional mapping
-- Lead disposition states
-- Appointment scheduling data
-- Loan officer assignments
-- Integration audit trail
+## Relationships
 
-Key Relationships:
+### Lead-Compliance Association
+- One-to-many relationship between leads and compliance records
+- Mandatory NMLS validation linkage
+- Voice consent tracking associations
+- Temporal compliance verification links
 
-1. Lead-to-Compliance
-- One-to-many relationship tracking all compliance checks
-- Enforced TCPA validation requirements
-- State regulation adherence records
-
-2. Lead-to-Contact
-- One-to-one mapping of lead details
-- Contact attempt history aggregation
-- Communication preference tracking
-
-3. Lead-to-CRM
-- Bi-directional sync status tracking
-- Disposition state machine
-- Automated handoff workflow data
-
-Importance Score: 90/100
-- Critical data structures for core mortgage lead management
-- Complex compliance tracking relationships
-- Essential CRM integration mappings
+### Contact-CRM Mapping
+- Bidirectional lead status synchronization
+- Compliance state propagation
+- Voice interaction history correlation
+- NMLS verification chain
 
 $END$
 

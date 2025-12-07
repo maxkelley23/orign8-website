@@ -3,7 +3,9 @@ import { Link } from 'react-router-dom';
 import { Phone, Zap, Shield, ArrowRight, BarChart3, MessageSquare, Clock, Check, Sparkles, Database, Loader2, Lock } from 'lucide-react';
 
 import { Button } from '../components/Button';
+import { LazyImage } from '../components/LazyImage';
 import { ButtonVariant } from '../types';
+import { trackCtaClick } from '../services/analytics';
 
 export const Home: React.FC = () => {
   // Initialize with placeholders to prevent layout shift, but track loading state
@@ -97,10 +99,11 @@ export const Home: React.FC = () => {
         {/* Main Hero Background - Surreal Landscape */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           {/* Base Image: Majestic, surreal abstract fluid landscape - Softened */}
-          <img
+          <LazyImage
             src="https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=2670&auto=format&fit=crop"
             alt="Surreal Landscape"
             className="w-full h-full object-cover opacity-5 dark:opacity-10 transition-opacity duration-500 scale-105 filter blur-2xl"
+            placeholderClassName="w-full h-full"
           />
 
           {/* Gradient Overlay for Text Readability - More opaque for subtlety */}
@@ -128,13 +131,13 @@ export const Home: React.FC = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up delay-400 opacity-0" style={{ animationFillMode: 'forwards' }}>
-            <Link to="/contact">
+            <Link to="/contact" onClick={() => trackCtaClick({ ctaName: 'Start Growing', location: 'hero' })}>
               <Button className="h-14 px-8 text-lg bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 shadow-[0_0_20px_-5px_rgba(0,0,0,0.2)] dark:shadow-[0_0_30px_-5px_rgba(255,255,255,0.2)] hover:scale-105 transition-all duration-300 rounded-full">
                 Start Growing
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
-            <Link to="/product">
+            <Link to="/product" onClick={() => trackCtaClick({ ctaName: 'Platform Tour', location: 'hero' })}>
               <Button variant={ButtonVariant.OUTLINE} className="h-14 px-8 text-lg border-slate-300 text-slate-700 hover:bg-slate-50 dark:text-white dark:border-slate-700 dark:hover:bg-slate-800 dark:hover:text-white bg-white/50 dark:bg-transparent backdrop-blur-sm rounded-full">
                 Platform Tour
               </Button>
@@ -150,7 +153,7 @@ export const Home: React.FC = () => {
 
           {/* Image Texture Layer behind product (Cosmic/Nebula vibe) */}
           <div className="absolute -inset-1 z-[-5] rounded-[32px] overflow-hidden opacity-40 dark:opacity-60 mix-blend-screen pointer-events-none">
-            <img src="https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=2670&auto=format&fit=crop" className="w-full h-full object-cover blur-3xl scale-110" alt="Glow" />
+            <LazyImage src="https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=2670&auto=format&fit=crop" className="w-full h-full object-cover blur-3xl scale-110" alt="Glow" placeholderClassName="w-full h-full" />
           </div>
 
           {/* New Premium Frame Container */}
@@ -428,10 +431,11 @@ export const Home: React.FC = () => {
           <div className="relative rounded-[3rem] overflow-hidden bg-slate-900 dark:bg-slate-900 px-6 py-20 md:px-20 md:py-28 text-center shadow-2xl group">
             {/* Background Effects */}
             <div className="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-105">
-              <img
+              <LazyImage
                 src="https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2000&auto=format&fit=crop"
                 className="w-full h-full object-cover opacity-30 mix-blend-overlay"
                 alt="CTA Background"
+                placeholderClassName="w-full h-full"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-slate-900/30"></div>
             </div>
@@ -456,13 +460,13 @@ export const Home: React.FC = () => {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up delay-300">
-                <Link to="/contact">
+                <Link to="/contact" onClick={() => trackCtaClick({ ctaName: 'Get Started Now', location: 'footer-cta' })}>
                   <Button className="h-16 px-10 text-lg bg-white text-slate-900 hover:bg-brand-50 hover:scale-105 transition-all duration-300 border-none shadow-[0_0_30px_rgba(255,255,255,0.25)] rounded-full font-bold">
                     Get Started Now
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                 </Link>
-                <Link to="/product">
+                <Link to="/product" onClick={() => trackCtaClick({ ctaName: 'View Platform Demo', location: 'footer-cta' })}>
                   <Button variant={ButtonVariant.OUTLINE} className="h-16 px-10 text-lg border-slate-600 text-white hover:bg-white/10 hover:text-white hover:border-white backdrop-blur-sm rounded-full">
                     View Platform Demo
                   </Button>

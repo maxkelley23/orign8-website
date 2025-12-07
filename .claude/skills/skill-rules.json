@@ -1,0 +1,169 @@
+{
+    "version": "1.0",
+    "description": "Skill activation triggers for orign8-website",
+    "skills": {
+        "frontend-dev-guidelines": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "React 19 + Vite + TypeScript frontend patterns",
+            "promptTriggers": {
+                "keywords": [
+                    "component",
+                    "react",
+                    "frontend",
+                    "UI",
+                    "page",
+                    "modal",
+                    "form",
+                    "tailwind",
+                    "styling",
+                    "dark mode",
+                    "theme",
+                    "lucide",
+                    "icon",
+                    "router",
+                    "navigation",
+                    "view transition"
+                ],
+                "intentPatterns": [
+                    "(create|add|make|build|update|modify).*?(component|UI|page|modal|form)",
+                    "(style|design|layout).*?(component|UI|page)",
+                    "(how to|best practice).*?(react|component|tailwind)"
+                ]
+            },
+            "fileTriggers": {
+                "pathPatterns": [
+                    "**/*.tsx",
+                    "**/*.ts",
+                    "components/**/*",
+                    "pages/**/*",
+                    "contexts/**/*"
+                ],
+                "pathExclusions": [
+                    "**/*.test.tsx",
+                    "**/*.test.ts",
+                    "node_modules/**"
+                ]
+            }
+        },
+        "testing-patterns": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "Testing patterns with Vitest and React Testing Library",
+            "promptTriggers": {
+                "keywords": [
+                    "test",
+                    "testing",
+                    "vitest",
+                    "mock",
+                    "mocking",
+                    "test failure",
+                    "coverage",
+                    "e2e",
+                    "puppeteer"
+                ],
+                "intentPatterns": [
+                    "(write|create|add|fix).*?test",
+                    "(mock|stub).*?(service|component)",
+                    "test.*?(fail|pass|broken)"
+                ]
+            },
+            "fileTriggers": {
+                "pathPatterns": [
+                    "src/**/*.test.tsx",
+                    "src/**/*.test.ts",
+                    "vitest.config.ts"
+                ]
+            }
+        },
+        "supabase-integration": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "Supabase database and auth integration",
+            "promptTriggers": {
+                "keywords": [
+                    "supabase",
+                    "database",
+                    "auth",
+                    "authentication",
+                    "login",
+                    "signup",
+                    "user",
+                    "session",
+                    "leads",
+                    "submit",
+                    "insert",
+                    "query"
+                ],
+                "intentPatterns": [
+                    "(connect|setup|configure).*?supabase",
+                    "(create|add|update|delete).*?(user|lead|record)",
+                    "(implement|add).*?(auth|login|signup)"
+                ]
+            },
+            "fileTriggers": {
+                "pathPatterns": [
+                    "services/supabaseClient.ts",
+                    "services/**/*.ts"
+                ]
+            }
+        },
+        "gemini-voice": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "high",
+            "description": "Gemini AI voice transcription integration",
+            "promptTriggers": {
+                "keywords": [
+                    "gemini",
+                    "voice",
+                    "transcription",
+                    "speech",
+                    "audio",
+                    "microphone",
+                    "AI",
+                    "genai"
+                ],
+                "intentPatterns": [
+                    "(implement|add|fix).*?(voice|speech|transcription)",
+                    "(use|integrate).*?gemini"
+                ]
+            },
+            "fileTriggers": {
+                "pathPatterns": [
+                    "pages/Contact.tsx"
+                ]
+            }
+        },
+        "skill-developer": {
+            "type": "domain",
+            "enforcement": "suggest",
+            "priority": "medium",
+            "description": "Creating and managing Claude Code skills",
+            "promptTriggers": {
+                "keywords": [
+                    "skill",
+                    "create skill",
+                    "skill-rules",
+                    "hook system",
+                    "skill trigger",
+                    "skill activation"
+                ],
+                "intentPatterns": [
+                    "(create|add|modify|build).*?skill",
+                    "skill.*?(work|trigger|activate)",
+                    "(how does|explain).*?skill"
+                ]
+            },
+            "fileTriggers": {
+                "pathPatterns": [
+                    ".claude/skills/**/*",
+                    ".claude/hooks/**/*"
+                ]
+            }
+        }
+    }
+}

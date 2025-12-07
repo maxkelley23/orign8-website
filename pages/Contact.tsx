@@ -1,9 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { submitLead } from '../services/supabaseClient';
+import { startTransaction, captureError } from '../services/monitoring';
+import { trackLeadSubmitted, trackVoiceTranscriptionStarted, trackVoiceTranscriptionCompleted } from '../services/analytics';
 import { Button } from '../components/Button';
 import { ButtonVariant, ContactFormData } from '../types';
 import { CheckCircle, AlertCircle, Loader2, ArrowRight, Mic, Square, Wand2 } from 'lucide-react';
-import { GoogleGenAI } from "@google/genai";
+
+// API base URL - use environment variable in production
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 export const Contact: React.FC = () => {
   const [formData, setFormData] = useState<ContactFormData>({
@@ -17,7 +21,7 @@ export const Contact: React.FC = () => {
 
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
-  
+
   // Voice Input State
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
@@ -30,6 +34,8 @@ export const Contact: React.FC = () => {
 
   const startRecording = async () => {
     try {
+      setErrorMessage(''); // Clear any previous errors
+      trackVoiceTranscriptionStarted();
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
@@ -44,7 +50,7 @@ export const Contact: React.FC = () => {
       mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         await transcribeAudio(audioBlob);
-        
+
         // Stop all tracks to release microphone
         stream.getTracks().forEach(track => track.stop());
       };
@@ -66,37 +72,48 @@ export const Contact: React.FC = () => {
   };
 
   const transcribeAudio = async (audioBlob: Blob) => {
+    // Start performance tracking for AI transcription
+    const transaction = startTransaction('ai.transcription', 'ai.call');
+
     try {
       // Convert Blob to Base64
       const reader = new FileReader();
       reader.readAsDataURL(audioBlob);
-      
+
       reader.onloadend = async () => {
         const base64Data = (reader.result as string).split(',')[1];
-        
-        try {
-          // Initialize Gemini
-          // Note: safely access key, though initialization guidelines say assume process.env.API_KEY is valid.
-          const apiKey = process.env.API_KEY;
-          if (!apiKey) throw new Error("API Key not found");
 
-          const ai = new GoogleGenAI({ apiKey });
-          const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: {
-              parts: [
-                {
-                  inlineData: {
-                    mimeType: 'audio/webm',
-                    data: base64Data
-                  }
-                },
-                { text: "Transcribe this audio exactly as spoken. Do not add any introductory or concluding remarks. Do not translate." }
-              ]
-            }
+        try {
+          // Use the secure backend proxy instead of client-side API calls
+          const response = await fetch(`${API_BASE_URL}/api/transcribe`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              audio: {
+                mimeType: 'audio/webm',
+                data: base64Data,
+              },
+            }),
           });
 
-          const transcription = response.text;
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            const error = new Error(errorData.error || `Transcription failed: ${response.status}`);
+            captureError(error, {
+              tags: { operation: 'voice-transcription' },
+              extra: { status: response.status },
+            });
+            throw error;
+          }
+
+          const data = await response.json();
+          const transcription = data.transcription;
+
+          transaction.finish();
+          trackVoiceTranscriptionCompleted({ success: true });
+
           if (transcription) {
             setFormData(prev => ({
               ...prev,
@@ -104,14 +121,34 @@ export const Contact: React.FC = () => {
             }));
           }
         } catch (apiError) {
+          transaction.finish();
+          trackVoiceTranscriptionCompleted({ success: false });
           console.error("Transcription error:", apiError);
+          captureError(apiError instanceof Error ? apiError : new Error('Transcription failed'), {
+            tags: { operation: 'voice-transcription' },
+          });
           setErrorMessage("Failed to transcribe audio. Please try typing instead.");
         } finally {
           setIsTranscribing(false);
         }
       };
+
+      reader.onerror = () => {
+        transaction.finish();
+        console.error("Error reading audio file");
+        captureError(new Error('Failed to read audio file'), {
+          tags: { operation: 'voice-transcription', stage: 'file-read' },
+        });
+        setErrorMessage("Failed to process audio. Please try again.");
+        setIsTranscribing(false);
+      };
     } catch (err) {
+      transaction.finish();
       console.error("Error processing audio:", err);
+      captureError(err instanceof Error ? err : new Error('Audio processing failed'), {
+        tags: { operation: 'voice-transcription' },
+      });
+      setErrorMessage("Failed to process audio. Please try again.");
       setIsTranscribing(false);
     }
   };
@@ -119,21 +156,31 @@ export const Contact: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('submitting');
-    
+    setErrorMessage('');
+
     try {
-      await submitLead(formData);
-      setStatus('success');
-      setFormData({ firstName: '', lastName: '', email: '', company: '', nmlsId: '', message: '' });
+      const result = await submitLead(formData);
+      if (result.success) {
+        setStatus('success');
+        trackLeadSubmitted({
+          company: formData.company,
+          hasNmls: !!formData.nmlsId,
+          source: 'contact-form',
+        });
+        setFormData({ firstName: '', lastName: '', email: '', company: '', nmlsId: '', message: '' });
+      } else {
+        throw new Error(result.error || 'Submission failed');
+      }
     } catch (error) {
       setStatus('error');
-      setErrorMessage('Something went wrong. Please try again later.');
+      setErrorMessage(error instanceof Error ? error.message : 'Something went wrong. Please try again later.');
     }
   };
 
   return (
     <div className="pt-32 pb-20 px-6 min-h-screen relative overflow-hidden bg-white dark:bg-slate-950 transition-colors duration-300">
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20">
-        
+
         {/* Left Side: Copy */}
         <div className="py-8">
           <h1 className="text-5xl font-bold text-slate-900 dark:text-white mb-6 font-display tracking-tight">Let's Talk Growth</h1>
@@ -181,8 +228,8 @@ export const Contact: React.FC = () => {
               </div>
               <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Application Received</h3>
               <p className="text-slate-500 dark:text-slate-400 mb-8">Thanks for your interest in Orign8. Our onboarding team will reach out to you shortly.</p>
-              <Button 
-                variant={ButtonVariant.OUTLINE} 
+              <Button
+                variant={ButtonVariant.OUTLINE}
                 onClick={() => setStatus('idle')}
               >
                 Book another demo
@@ -192,9 +239,10 @@ export const Contact: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">First Name</label>
-                  <input 
-                    type="text" 
+                  <label htmlFor="firstName" className="text-sm font-semibold text-slate-700 dark:text-slate-300">First Name</label>
+                  <input
+                    type="text"
+                    id="firstName"
                     name="firstName"
                     required
                     value={formData.firstName}
@@ -204,9 +252,10 @@ export const Contact: React.FC = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Last Name</label>
-                  <input 
-                    type="text" 
+                  <label htmlFor="lastName" className="text-sm font-semibold text-slate-700 dark:text-slate-300">Last Name</label>
+                  <input
+                    type="text"
+                    id="lastName"
                     name="lastName"
                     required
                     value={formData.lastName}
@@ -218,9 +267,10 @@ export const Contact: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Work Email</label>
-                <input 
-                  type="email" 
+                <label htmlFor="email" className="text-sm font-semibold text-slate-700 dark:text-slate-300">Work Email</label>
+                <input
+                  type="email"
+                  id="email"
                   name="email"
                   required
                   value={formData.email}
@@ -232,9 +282,10 @@ export const Contact: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Company Name</label>
-                  <input 
-                    type="text" 
+                  <label htmlFor="company" className="text-sm font-semibold text-slate-700 dark:text-slate-300">Company Name</label>
+                  <input
+                    type="text"
+                    id="company"
                     name="company"
                     required
                     value={formData.company}
@@ -244,9 +295,10 @@ export const Contact: React.FC = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">NMLS # <span className="text-slate-400 font-normal">(Optional)</span></label>
-                  <input 
-                    type="text" 
+                  <label htmlFor="nmlsId" className="text-sm font-semibold text-slate-700 dark:text-slate-300">NMLS # <span className="text-slate-400 font-normal">(Optional)</span></label>
+                  <input
+                    type="text"
+                    id="nmlsId"
                     name="nmlsId"
                     value={formData.nmlsId}
                     onChange={handleChange}
@@ -258,7 +310,7 @@ export const Contact: React.FC = () => {
 
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">How can we help?</label>
+                  <label htmlFor="message" className="text-sm font-semibold text-slate-700 dark:text-slate-300">How can we help?</label>
                   {isTranscribing ? (
                     <span className="text-xs text-brand-600 dark:text-brand-400 flex items-center gap-1.5 animate-pulse">
                       <Wand2 size={12} /> Transcribing audio...
@@ -270,7 +322,8 @@ export const Contact: React.FC = () => {
                   ) : null}
                 </div>
                 <div className="relative">
-                  <textarea 
+                  <textarea
+                    id="message"
                     name="message"
                     rows={4}
                     required
@@ -284,8 +337,8 @@ export const Contact: React.FC = () => {
                     onClick={isRecording ? stopRecording : startRecording}
                     disabled={isTranscribing}
                     className={`absolute bottom-3 right-3 p-2 rounded-full transition-all duration-200 ${
-                      isRecording 
-                        ? 'bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400' 
+                      isRecording
+                        ? 'bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400'
                         : isTranscribing
                           ? 'bg-brand-100 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400 cursor-wait'
                           : 'bg-slate-200 text-slate-600 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600'
@@ -309,7 +362,7 @@ export const Contact: React.FC = () => {
                   {errorMessage}
                 </div>
               )}
-              
+
               {/* Audio error message specifically */}
               {errorMessage && errorMessage.includes('microphone') && status !== 'error' && (
                  <div className="flex items-center gap-2 text-red-600 text-sm bg-red-50 dark:bg-red-900/20 p-3 rounded-lg border border-red-200 dark:border-red-800">
@@ -318,9 +371,9 @@ export const Contact: React.FC = () => {
                 </div>
               )}
 
-              <Button 
-                type="submit" 
-                fullWidth 
+              <Button
+                type="submit"
+                fullWidth
                 disabled={status === 'submitting'}
                 className="h-12 text-base shadow-lg group"
               >

@@ -1,46 +1,65 @@
 ---
-description: Defines core lead qualification logic, queue processing, and contact scheduling for mortgage lead management
+description: Specialized logic for processing mortgage leads with voice AI integration and compliance validation
 ---
 
 
 # lead-processing-algorithms
 
-## Lead Processing Core Logic
-Located in `pages/Product.tsx`:
+## Lead Qualification Flow (Score: 85)
 
-### Queue Management
-- Smart retry mechanism with diminishing attempt frequency
-- Concurrency control limiting simultaneous lead processing
-- Circuit breaker pattern preventing system overload
-- Timezone-aware contact scheduling respecting local time windows
+The mortgage lead processing system implements a specialized qualification workflow:
 
-### Compliance Rules 
-- TCPA compliance validation before contact attempts
-- Enforced calling window (8am-9pm recipient local time)
-- DNC list integration with real-time checks
-- State-specific restrictions (e.g. Louisiana Sunday calling rules)
+1. NMLS ID Validation
+- Initial validation of mortgage license numbers
+- Company-specific routing rules 
+- Compliance verification gates
 
-### Contact Scheduling
-Located in `pages/Contact.tsx`:
-- Voice AI transcription with mortgage context awareness
-- Domain-specific lead qualification scoring
-- Integration with Gemini AI for real-time processing
-- Automated appointment scheduling based on qualification status
+2. Voice/Text Hybrid Input
+- Real-time transcription with mortgage context
+- Domain-specific lead capture validation
+- TCPA-compliant recording controls
 
-### Data Pipeline
-Located in `services/supabaseClient.ts`:
-- Mortgage-specific lead submission validation
-- NMLS ID verification workflows
-- Structured contact form validation for mortgage requirements
+## Queue Processing (Score: 80)
 
-## Integration Points
-- Bi-directional Total Expert CRM sync
-- Automated disposition tracking
-- Industry-specific lead scoring calculation
-- Loan officer handoff workflow automation
+Lead processing implements industry-specific handling:
 
-Importance Score: 85/100
-The lead processing algorithms represent core business value with unique mortgage industry requirements, complex compliance rules, and specialized qualification logic.
+1. CRM Integration Pipeline
+- Mortgage data transformation
+- Industry compliance validation
+- NMLS data handling requirements
+
+2. Contact Scheduling
+- TCPA-aware communication rules
+- Rate limiting for mortgage industry
+- Company routing logic
+
+## Analytics Integration (Score: 75)
+
+Domain-specific event tracking for lead processing:
+
+1. Qualification Events
+- NMLS verification tracking
+- Lead submission monitoring
+- Voice transcription compliance checks
+
+2. Compliance Monitoring
+- TCPA validation tracking
+- Rate limit monitoring
+- Communication rule adherence
+
+## Compliance Engine (Score: 90)
+
+Core business logic for mortgage industry requirements:
+
+1. Content Generation Rules
+- Mortgage-specific validation
+- Industry compliance checks
+- TCPA requirements
+
+2. Communication Controls
+- Voice recording limitations
+- Transcription validation
+- Industry-specific rate limiting
 
 $END$
 

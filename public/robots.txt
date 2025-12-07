@@ -1,0 +1,11 @@
+# Orign8 Mortgage Tech - robots.txt
+# https://orign8.app
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://orign8.app/sitemap.xml
+
+# Disallow admin/auth pages from indexing
+Disallow: /login

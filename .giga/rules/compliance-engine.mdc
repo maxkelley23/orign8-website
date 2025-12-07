@@ -1,39 +1,49 @@
 ---
-description: Specification for implementing TCPA compliance, calling windows, and regulatory requirements in voice/calling systems
+description: Compliance engine implementation for mortgage industry voice communications and lead management
 ---
 
 
 # compliance-engine
 
-The compliance engine implements critical regulatory controls for mortgage industry contact management:
+## Core Components (Score: 85/100)
 
-## TCPA Compliance Controls
-Location: pages/Product.tsx
-- Enforces Telephone Consumer Protection Act (TCPA) requirements 
-- Validates consent before automated contact attempts
-- Maintains audit trail of consent records
-- Implements required opt-out mechanisms
+The compliance engine implements mortgage industry-specific rules and validations:
 
-## Contact Window Management
-- Restricts outbound contact attempts to 8am-9pm in recipient's local timezone
-- Handles timezone calculations and daylight savings transitions
-- Enforces state-specific restrictions (e.g. Louisiana Sunday calling prohibition)
+1. TCPA Compliance Validation 
+- Validates voice communication permissions
+- Enforces industry-specific calling restrictions
+- Located in `server/index.js`
 
-## DNC Integration 
-- Real-time Do Not Call list validation before contact attempts
-- Integration with national DNC registry
-- Maintains company-specific DNC list
-- Automated suppression of DNC-registered numbers
+2. Rate Limiting Rules
+- Mortgage industry-specific contact frequency limits
+- Communication attempt tracking
+- Implemented in `server/index.js`
 
-## Regulatory Features
-- State-specific compliance rule enforcement
-- Consent expiration tracking
-- Required disclosure management
-- Automated compliance reporting capabilities
+## Lead Processing Compliance (Score: 80/100)
 
-Importance Score: 95/100
+1. NMLS Validation
+- Real-time NMLS ID verification
+- Company-specific routing rules based on licensing
+- Implemented in `services/supabaseClient.ts`
 
-The compliance engine represents core business functionality with direct regulatory impact. It implements critical rules that protect the business from violations while enabling compliant contact operations.
+2. Voice Communication Rules
+- Compliance-aware recording limitations
+- Audio transcription validation for regulatory requirements
+- Located in `pages/Contact.tsx`
+
+## Content Generation Rules (Score: 75/100)
+
+Custom content generation rules specific to mortgage industry compliance:
+- Domain-specific validation
+- Regulatory-compliant communication templates
+- Industry-specific content restrictions
+
+## Data Handling Requirements (Score: 70/100)
+
+Mortgage-specific data processing rules:
+- NMLS data handling protocols
+- Industry-compliant data transformation
+- Secure lead data processing
 
 $END$
 

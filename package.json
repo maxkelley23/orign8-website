@@ -6,37 +6,48 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:analyze": "vite build && echo Bundle analysis available at dist/stats.html",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write .",
     "test": "vitest",
     "e2e:preview": "npm run build && npm run preview -- --port 5173",
     "e2e:puppeteer": "node scripts/puppeteer-check.js",
-    "e2e": "npm run e2e:puppeteer"
+    "e2e": "npm run e2e:puppeteer",
+    "db:start": "npx supabase start",
+    "db:stop": "npx supabase stop",
+    "db:migrate": "npx supabase db push",
+    "db:seed": "npx supabase db seed",
+    "db:reset": "npx supabase db reset",
+    "db:types": "npx supabase gen types typescript --local > src/types/database.ts"
   },
   "dependencies": {
-    "react": "^19.2.0",
-    "lucide-react": "^0.554.0",
-    "react-router-dom": "^7.9.6",
-    "react-dom": "^19.2.0",
+    "@google/genai": "^1.30.0",
+    "@sentry/react": "^10.27.0",
     "@supabase/supabase-js": "^2.84.0",
-    "@google/genai": "^1.30.0"
+    "lucide-react": "^0.554.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.9.6"
   },
   "devDependencies": {
+    "@axe-core/puppeteer": "^4.8.0",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.5.2",
     "@types/node": "^22.14.0",
-    "@vitejs/plugin-react": "^5.0.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0",
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
+    "@vitejs/plugin-react": "^5.0.0",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
-    "prettier": "^3.2.5",
-    "vitest": "^2.1.8",
-    "@testing-library/react": "^16.0.0",
-    "@testing-library/jest-dom": "^6.4.2",
     "jsdom": "^24.0.0",
-    "puppeteer": "^23.0.0"
+    "prettier": "^3.2.5",
+    "puppeteer": "^23.0.0",
+    "rollup-plugin-visualizer": "^6.0.5",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0",
+    "vitest": "^2.1.8"
   }
 }

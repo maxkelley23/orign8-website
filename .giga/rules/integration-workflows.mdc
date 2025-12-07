@@ -1,36 +1,47 @@
 ---
-description: Specifications for Total Expert CRM integration patterns including sync, logging and appointment workflows
+description: Specifications for Total Expert CRM integration patterns and bi-directional data synchronization workflows
 ---
 
 
 # integration-workflows
 
-The integration patterns with Total Expert CRM implement several specialized workflows:
+## CRM Integration Core Logic (Score: 85)
 
-## Bi-directional Sync
-- Real-time synchronization of lead data and contact information between the Voice AI system and Total Expert
-- Automatic propagation of lead status changes and disposition codes
-- Custom field mapping for mortgage-specific data points
+Lead data synchronization with Total Expert CRM includes:
+- Mortgage-specific data transformation layer
+- NMLS validation before sync operations
+- Bi-directional state management for lead disposition
+- Appointment scheduling integration with CRM calendar systems
 
-## Disposition Logging
-Implemented in pages/Product.tsx:
-- Automated logging of all contact attempts and outcomes
-- Structured disposition codes aligned with mortgage industry standards
-- Integration of compliance status into disposition records
+## Compliance Workflows (Score: 80)
 
-## Appointment Setting
-- Direct calendar sync with Total Expert for loan officer availability
-- Automated appointment creation with contact details
-- Real-time conflict detection and rescheduling logic
+Mandatory compliance checks during CRM integration:
+- TCPA validation for voice communications
+- NMLS data handling compliance
+- Rate limiting specific to mortgage industry requirements
+- Audit logging of sync operations
 
-## CRM Integration Points
-Key workflows include:
-- Lead score calculation and synchronization
-- Automated handoff to loan officers based on qualification criteria
-- Compliance status verification before CRM updates
+## Data Transformation Pipeline (Score: 75)
 
-Importance Score: 65/100
-The integration workflows represent critical business functionality for maintaining synchronized lead data and compliant contact records between systems.
+Domain-specific transformations:
+- Lead qualification status mapping
+- Industry-specific field normalization
+- Mortgage-specific contact record formatting
+- NMLS ID verification and enrichment
+
+## Event Tracking (Score: 70)
+
+CRM-specific analytics tracking:
+- Lead submission verification events
+- Sync operation status logging
+- Integration error tracking
+- Appointment scheduling confirmations
+
+Notable Implementation Points:
+- Custom voice recording workflow integrated with CRM lead capture
+- Mortgage-specific lead routing logic
+- Company-specific disposition mapping
+- Compliance-aware communication rules
 
 $END$
 

@@ -1,0 +1,18 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="iconBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e293b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="180" height="180" rx="40" fill="url(#iconBg)"/>
+
+  <!-- Layers icon (scaled and centered) -->
+  <g transform="translate(40, 45)" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M50 0L0 25l50 25 50-25-50-25z"/>
+    <path d="M0 50l50 25 50-25"/>
+    <path d="M0 75l50 25 50-25"/>
+  </g>
+</svg>

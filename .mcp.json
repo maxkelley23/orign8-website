@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?project_ref=qmnuftmvrewsdoklwupy"
+    },
+    "magic": {
+      "command": "npx",
+      "args": ["-y", "@21st-dev/magic@latest"],
+      "env": {
+        "API_KEY": "781691e6d900fd1bfa9f0e52d5f96440dc92963ab58de776cb123f532194e1a0"
+      }
+    }
+  }
+}

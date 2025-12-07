@@ -20,3 +20,43 @@ Object.defineProperty(window, 'matchMedia', {
         dispatchEvent: vi.fn(),
     })),
 });
+
+// Mock IntersectionObserver for lazy loading components
+class MockIntersectionObserver {
+    readonly root: Element | null = null;
+    readonly rootMargin: string = '';
+    readonly thresholds: ReadonlyArray<number> = [];
+
+    constructor(private callback: IntersectionObserverCallback) {}
+
+    observe(target: Element): void {
+        // Immediately trigger callback with isIntersecting: true
+        this.callback([
+            {
+                isIntersecting: true,
+                boundingClientRect: target.getBoundingClientRect(),
+                intersectionRatio: 1,
+                intersectionRect: target.getBoundingClientRect(),
+                rootBounds: null,
+                target,
+                time: Date.now(),
+            }
+        ], this);
+    }
+
+    unobserve(): void {}
+    disconnect(): void {}
+    takeRecords(): IntersectionObserverEntry[] { return []; }
+}
+
+Object.defineProperty(window, 'IntersectionObserver', {
+    writable: true,
+    configurable: true,
+    value: MockIntersectionObserver,
+});
+
+Object.defineProperty(global, 'IntersectionObserver', {
+    writable: true,
+    configurable: true,
+    value: MockIntersectionObserver,
+});

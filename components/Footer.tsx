@@ -1,14 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Linkedin, Twitter, Github } from 'lucide-react';
 
 export const Footer: React.FC = () => {
-  const handleSocialClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    // In a real app, these would link to actual profiles
-    console.log("Social link clicked");
-  };
-
   return (
     <footer className="bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 pt-16 pb-10 font-sans relative z-20 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6">
@@ -54,15 +47,10 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="border-t border-slate-200 dark:border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-slate-400 text-xs">
+        <div className="border-t border-slate-200 dark:border-slate-800 pt-8">
+          <p className="text-slate-400 text-xs text-center md:text-left">
             &copy; {new Date().getFullYear()} Orign8 Technologies Inc. All rights reserved.
           </p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            <a href="#" onClick={handleSocialClick} className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"><Linkedin size={18} /></a>
-            <a href="#" onClick={handleSocialClick} className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"><Twitter size={18} /></a>
-            <a href="#" onClick={handleSocialClick} className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"><Github size={18} /></a>
-          </div>
         </div>
       </div>
     </footer>

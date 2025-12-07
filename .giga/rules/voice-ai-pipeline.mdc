@@ -1,38 +1,53 @@
 ---
-description: Specification for voice input processing pipeline with mortgage-specific AI transcription and lead qualification
+description: Voice AI integration with mortgage-specific context processing and compliance handling
 ---
 
 
 # voice-ai-pipeline
 
-The voice AI pipeline implements specialized mortgage industry voice processing:
+Importance Score: 85/100
 
 ## Core Components
 
-1. Voice Input Handler (Contact.tsx):
-- Real-time voice capture with mortgage-specific terminology optimization
-- Domain-focused transcription workflow for lead qualification
-- Integration with Gemini AI for contextual understanding
+### Voice Input Handler (pages/Contact.tsx)
+- Real-time voice transcription with mortgage domain context
+- State management for recording statuses: active, processing, error
+- Hybrid voice/text lead capture system
+- Industry-compliant recording limitations
 
-2. AI Processing Pipeline:
-- Mortgage terminology-aware transcription
-- Lead qualification assessment based on industry criteria
-- Automated extraction of key mortgage qualification data points
+### Audio Processing (server/index.js)
+- Domain-specific transcription validation
+- Mortgage terminology context processing
+- TCPA compliance checks for voice communications
+- Rate limiting rules for mortgage industry standards
 
-## Business Rules
+## Lead Processing Integration
 
-1. Lead Qualification Logic:
-- Industry-specific context processing for mortgage terminology
-- Real-time analysis of borrower qualification signals
-- Automated categorization of lead quality based on transcribed responses
+### Transcription Workflow
+- Mortgage-specific context analysis
+- NMLS ID validation within transcribed content
+- Compliance-aware communication rules enforcement
+- Integration with mortgage CRM systems
 
-2. Voice Processing Workflow:
-- Mortgage domain knowledge integration
-- Lead scoring based on transcribed content
-- CRM-ready data formatting for loan officer handoff
+### Analytics (services/analytics.ts)
+- Voice transcription compliance tracking
+- Lead qualification event monitoring
+- NMLS verification tracking
+- Mortgage-specific CTA interaction analysis
 
-Importance Score: 80/100
-The voice AI pipeline represents a critical component for automated lead qualification and mortgage-specific processing, directly impacting business operations through intelligent voice interaction handling.
+## Compliance Features
+
+### Voice Communication Rules
+- TCPA compliance validation for voice recordings
+- Recording duration limits per industry standards
+- Automatic mortgage terminology detection
+- Real-time compliance checking during transcription
+
+### Data Handling
+- Secure processing of transcribed mortgage data
+- NMLS data handling requirements implementation
+- Industry-specific lead routing based on transcribed content
+- Compliance-aware storage of voice data
 
 $END$
 

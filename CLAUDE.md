@@ -13,50 +13,50 @@
 - Explain your OBSERVATIONS clearly, then provide REASONING to identify the exact issue. Add console logs when needed to gather more information.
 
 
-## Core Business Architecture
+## Core Business Architecture (Score: 75/100)
 
-The Voice AI system implements specialized mortgage lead management through three primary business components:
+The system implements a mortgage-specific lead management platform with integrated voice AI capabilities. The architecture centers around three primary business domains:
 
-### Lead Capture System (pages/Contact.tsx)
-- Voice input processing with mortgage-specific transcription
-- Real-time Gemini AI integration for speech-to-text
-- Domain-specific lead qualification logic
+1. Voice-Enabled Lead Capture
+- Hybrid voice/text input system for mortgage lead collection
+- Real-time transcription with mortgage-specific context
+- NMLS ID validation integrated into lead capture flow
 
-### Compliance Management (pages/Product.tsx)
-- TCPA compliance enforcement engine
-- Time-window restrictions (8am-9pm local)
-- DNC list integration
-- State-specific calling regulation handling
+2. Mortgage-Specific CRM Integration
+- Lead processing with industry compliance checks
+- NMLS verification workflows
+- Mortgage data transformation pipelines
 
-### Lead Processing Pipeline
-- Structured mortgage data validation
-- NMLS ID verification
-- Smart retry logic for failed contacts
-- Timezone-aware scheduling
-- Automated disposition logging
-- Lead scoring based on mortgage metrics
+3. Compliance Management
+- TCPA compliance validation for voice communications
+- Rate limiting aligned with mortgage industry requirements
+- Automated content generation with regulatory checks
 
-### CRM Integration Layer
-- Total Expert bi-directional synchronization
-- Automated appointment scheduling
-- Loan officer handoff workflows
-- Contact disposition tracking
+## Key Business Workflows
 
-## Industry-Specific Features
+### Lead Qualification System
+Located in `pages/Contact.tsx`:
+- Voice-based lead capture with real-time transcription
+- Domain-specific qualification rules for mortgage industry
+- NMLS ID validation and verification
 
-1. Mortgage Context Processing
-- Real-time voice transcription with mortgage terminology
-- Compliance-first architecture
-- Automated lead qualification
+### Compliance Engine
+Located in `server/index.js`:
+- Content generation rules for mortgage compliance
+- Audio transcription with domain validation
+- Industry-specific rate limiting implementation
 
-2. Regulatory Controls
-- TCPA adherence
-- State-specific restrictions handling
-- Calling window enforcement
+### Analytics Integration
+Located in `services/analytics.ts`:
+- Mortgage-specific event tracking
+- Lead submission verification
+- Compliance monitoring for voice communications
 
-## Business Logic Score: 65/100
-
-The system demonstrates specialized mortgage industry focus with emphasis on compliance, lead management, and automated customer contact workflows.
+### CRM Processing
+Located in `services/supabaseClient.ts`:
+- Industry-specific data transformation
+- Mortgage compliance validation
+- Lead routing based on NMLS credentials
 
 $END$
 

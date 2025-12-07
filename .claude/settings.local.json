@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "enabledMcpjsonServers": [
+    "supabase"
+  ],
+  "enableAllProjectMcpServers": true
+}
