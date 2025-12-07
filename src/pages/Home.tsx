@@ -1,95 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Zap, Shield, ArrowRight, BarChart3, MessageSquare, Clock, Check, Sparkles, Database, Loader2, Lock } from 'lucide-react';
+import { Phone, Zap, Shield, ArrowRight, BarChart3, MessageSquare, Clock, Check, Sparkles, Database, Lock } from 'lucide-react';
 
 import { Button } from '../components/Button';
 import { LazyImage } from '../components/LazyImage';
 import { ButtonVariant } from '../types';
 import { trackCtaClick } from '../services/analytics';
 
+// Static feature card background images (pre-generated for performance)
+const FEATURE_IMAGES = {
+  speed: '/images/feature-speed.jpg',
+  reactivation: '/images/feature-reactivation.jpg',
+  compliance: '/images/feature-compliance.jpg',
+  analytics: '/images/feature-analytics.jpg',
+  hero: '/images/hero-background.jpg',
+};
+
 export const Home: React.FC = () => {
-  // Initialize with placeholders to prevent layout shift, but track loading state
-  const [bgImages, setBgImages] = useState({
-    speed: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000&auto=format&fit=crop",
-    reactivation: "https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=2000&auto=format&fit=crop",
-    compliance: "https://images.unsplash.com/photo-1614850523060-8da1d56a37cf?q=80&w=2000&auto=format&fit=crop",
-    analytics: "https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2000&auto=format&fit=crop"
-  });
-  const [loadingImages, setLoadingImages] = useState<Record<string, boolean>>({
-    speed: true,
-    reactivation: true,
-    compliance: true,
-    analytics: true
-  });
-
-  useEffect(() => {
-    const generateBackgrounds = async () => {
-      const cards = [
-        {
-          key: 'speed',
-          prompt: 'Surrealism painting with a beautiful scenery, motion blur of a high speed futuristic train travelling through a cloud city at golden hour, oil painting style, highly detailed, 8k',
-          aspectRatio: '16:9'
-        },
-        {
-          key: 'reactivation',
-          prompt: 'Surrealism painting with a beautiful scenery, a dormant ancient garden suddenly blooming with bioluminescent flowers in twilight, oil painting style, highly detailed, 8k',
-          aspectRatio: '9:16'
-        },
-        {
-          key: 'compliance',
-          prompt: 'Surrealism painting with a beautiful scenery, a perfectly symmetrical glass fortress standing calm in a turbulent ocean, safe, oil painting style, highly detailed, 8k',
-          aspectRatio: '4:3'
-        },
-        {
-          key: 'analytics',
-          prompt: 'Surrealism painting with a beautiful scenery, complex constellations connecting in a deep blue night sky over mountains, insightful, oil painting style, highly detailed, 8k',
-          aspectRatio: '4:3'
-        }
-      ];
-
-      cards.forEach(async (card) => {
-        try {
-          const response = await fetch('/api/generate-content', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              model: 'gemini-2.0-flash', // Using flash for speed on home page
-              contents: [{ parts: [{ text: card.prompt }] }],
-              config: {
-                imageConfig: {
-                  aspectRatio: card.aspectRatio
-                }
-              }
-            }),
-          });
-
-          if (!response.ok) throw new Error('Failed to generate content');
-
-          const data = await response.json();
-
-          if (data.candidates?.[0]?.content?.parts) {
-            for (const part of data.candidates[0].content.parts) {
-              if (part.inlineData) {
-                setBgImages(prev => ({
-                  ...prev,
-                  [card.key]: `data:image/png;base64,${part.inlineData.data}`
-                }));
-                break;
-              }
-            }
-          }
-        } catch (error) {
-          console.error(`Failed to generate background for ${card.key}:`, error);
-        } finally {
-          setLoadingImages(prev => ({ ...prev, [card.key]: false }));
-        }
-      });
-    };
-
-    generateBackgrounds();
-  }, []);
 
   return (
     <div className="w-full overflow-hidden bg-white dark:bg-slate-950 transition-colors duration-300">
@@ -100,7 +27,7 @@ export const Home: React.FC = () => {
         <div className="absolute inset-0 z-0 overflow-hidden">
           {/* Base Image: Majestic, surreal abstract fluid landscape - Softened */}
           <LazyImage
-            src="https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=2670&auto=format&fit=crop"
+            src={FEATURE_IMAGES.hero}
             alt="Surreal Landscape"
             className="w-full h-full object-cover opacity-5 dark:opacity-10 transition-opacity duration-500 scale-105 filter blur-2xl"
             placeholderClassName="w-full h-full"
@@ -116,7 +43,7 @@ export const Home: React.FC = () => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
             </span>
-            <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 tracking-wide uppercase group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Now enrolling for Q4 Cohort</span>
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 tracking-wide uppercase group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Built for the Modern Lender</span>
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-slate-900 dark:text-white mb-8 leading-[1.1] text-balance animate-fade-in-up delay-200 opacity-0" style={{ animationFillMode: 'forwards' }}>
@@ -153,7 +80,7 @@ export const Home: React.FC = () => {
 
           {/* Image Texture Layer behind product (Cosmic/Nebula vibe) */}
           <div className="absolute -inset-1 z-[-5] rounded-[32px] overflow-hidden opacity-40 dark:opacity-60 mix-blend-screen pointer-events-none">
-            <LazyImage src="https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=2670&auto=format&fit=crop" className="w-full h-full object-cover blur-3xl scale-110" alt="Glow" placeholderClassName="w-full h-full" />
+            <LazyImage src={FEATURE_IMAGES.hero} className="w-full h-full object-cover blur-3xl scale-110" alt="Glow" placeholderClassName="w-full h-full" />
           </div>
 
           {/* New Premium Frame Container */}
@@ -278,15 +205,10 @@ export const Home: React.FC = () => {
             {/* Feature 1: Speed to Lead */}
             <div className="md:col-span-2 row-span-1 md:row-span-2 rounded-[32px] p-10 border border-slate-200 dark:border-slate-800 flex flex-col relative overflow-hidden group transition-all duration-500 hover:shadow-2xl hover:border-slate-300 dark:hover:border-slate-700">
               <div className="absolute inset-0 bg-slate-900">
-                {loadingImages.speed && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-slate-800">
-                    <Loader2 className="w-8 h-8 text-slate-600 animate-spin" />
-                  </div>
-                )}
                 <img
-                  src={bgImages.speed}
+                  src={FEATURE_IMAGES.speed}
                   alt="Abstract Surreal Speed"
-                  className={`w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 ${loadingImages.speed ? 'opacity-0' : 'opacity-100'}`}
+                  className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 transition-opacity duration-300"></div>
               </div>
@@ -305,15 +227,10 @@ export const Home: React.FC = () => {
             {/* Feature 2: Database Reactivation */}
             <div className="md:col-span-1 row-span-1 md:row-span-2 rounded-[32px] p-10 border border-slate-200 dark:border-slate-800 flex flex-col relative overflow-hidden group hover:shadow-xl transition-all duration-500 hover:border-slate-300 dark:hover:border-slate-700">
               <div className="absolute inset-0 bg-slate-900">
-                {loadingImages.reactivation && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-slate-800">
-                    <Loader2 className="w-8 h-8 text-slate-600 animate-spin" />
-                  </div>
-                )}
                 <img
-                  src={bgImages.reactivation}
+                  src={FEATURE_IMAGES.reactivation}
                   alt="Surreal Crystal Discovery"
-                  className={`w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 ${loadingImages.reactivation ? 'opacity-0' : 'opacity-100'}`}
+                  className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-black/60 group-hover:bg-black/50 transition-colors"></div>
               </div>
@@ -332,15 +249,10 @@ export const Home: React.FC = () => {
             {/* Feature 3: TCPA */}
             <div className="md:col-span-1 bg-slate-50 dark:bg-slate-900/50 rounded-[32px] p-8 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all group relative overflow-hidden min-h-[260px] flex flex-col justify-end hover:border-slate-300 dark:hover:border-slate-700">
               <div className="absolute inset-0 bg-slate-900">
-                {loadingImages.compliance && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-slate-800">
-                    <Loader2 className="w-8 h-8 text-slate-600 animate-spin" />
-                  </div>
-                )}
                 <img
-                  src={bgImages.compliance}
+                  src={FEATURE_IMAGES.compliance}
                   alt="Geometric Structure Compliance"
-                  className={`w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 ${loadingImages.compliance ? 'opacity-0' : 'opacity-100'}`}
+                  className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-black/60 group-hover:bg-black/50 transition-colors"></div>
               </div>
@@ -357,15 +269,10 @@ export const Home: React.FC = () => {
             {/* Feature 4: Analytics */}
             <div className="md:col-span-1 bg-slate-50 dark:bg-slate-900/50 rounded-[32px] p-8 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all group relative overflow-hidden min-h-[260px] flex flex-col justify-end hover:border-slate-300 dark:hover:border-slate-700">
               <div className="absolute inset-0 bg-slate-900">
-                {loadingImages.analytics && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-slate-800">
-                    <Loader2 className="w-8 h-8 text-slate-600 animate-spin" />
-                  </div>
-                )}
                 <img
-                  src={bgImages.analytics}
+                  src={FEATURE_IMAGES.analytics}
                   alt="Galactic Network Analytics"
-                  className={`w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 ${loadingImages.analytics ? 'opacity-0' : 'opacity-100'}`}
+                  className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-black/70 group-hover:bg-black/60 transition-colors"></div>
               </div>

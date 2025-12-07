@@ -1,6 +1,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { ContactFormData } from '../types';
 import { startTransaction, captureError } from './monitoring';
+import { Database, Lead } from '../types/database';
 
 // =============================================================================
 // ENVIRONMENT VALIDATION
@@ -28,8 +29,8 @@ const validateEnv = (): { url: string; key: string } | null => {
 
 const envConfig = validateEnv();
 
-export const supabase: SupabaseClient | null = envConfig
-    ? createClient(envConfig.url, envConfig.key)
+export const supabase: SupabaseClient<Database> | null = envConfig
+    ? createClient<Database>(envConfig.url, envConfig.key)
     : null;
 
 export const isSupabaseConfigured = (): boolean => {
@@ -43,7 +44,7 @@ export const isSupabaseConfigured = (): boolean => {
 export interface SubmitLeadResult {
     success: boolean;
     error?: string;
-    data?: unknown;
+    data?: Lead | ({ id: string } & ContactFormData) | null;  // Lead from DB, mock data, or null
 }
 
 export const submitLead = async (data: ContactFormData): Promise<SubmitLeadResult> => {
@@ -89,21 +90,22 @@ export const submitLead = async (data: ContactFormData): Promise<SubmitLeadResul
 
         transaction.finish();
 
-        if (error) {
-            console.error('[Supabase] Insert error:', error.message);
-            captureError(new Error(error.message), {
+        if (error || !result) {
+            const errorMsg = error?.message || 'Insert returned no data';
+            console.error('[Supabase] Insert error:', errorMsg);
+            captureError(new Error(errorMsg), {
                 tags: { operation: 'lead-submit' },
                 extra: { email: data.email },
             });
             return {
                 success: false,
-                error: error.message,
+                error: errorMsg,
             };
         }
 
         return {
             success: true,
-            data: result,
+            data: result as Lead,
         };
     } catch (err) {
         transaction.finish();

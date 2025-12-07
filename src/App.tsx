@@ -14,6 +14,7 @@ const Contact = lazy(() => import('./pages/Contact').then(m => ({ default: m.Con
 const Product = lazy(() => import('./pages/Product').then(m => ({ default: m.Product })));
 const Login = lazy(() => import('./pages/Login').then(m => ({ default: m.Login })));
 const About = lazy(() => import('./pages/About').then(m => ({ default: m.About })));
+const Privacy = lazy(() => import('./pages/Privacy').then(m => ({ default: m.Privacy })));
 
 /**
  * Loading fallback for lazy-loaded routes
@@ -126,6 +127,7 @@ const AppContent: React.FC = () => {
             <Route path="/product" element={<Product />} />
             <Route path="/about" element={<About />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/privacy" element={<Privacy />} />
             <Route path="*" element={<Home />} />
           </Routes>
         </Suspense>

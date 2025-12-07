@@ -164,12 +164,12 @@ export const Product: React.FC = () => {
                 </div>
               </div>
 
-              {/* Tech Stack Floating Tags */}
-              <div className="absolute -right-8 top-10 bg-white dark:bg-slate-800 p-3 rounded-lg shadow-lg border border-slate-100 dark:border-slate-700 flex items-center gap-2 animate-float">
+              {/* Tech Stack Floating Tags - Hidden on mobile/tablet to prevent overflow */}
+              <div className="hidden lg:flex absolute -right-8 top-10 bg-white dark:bg-slate-800 p-3 rounded-lg shadow-lg border border-slate-100 dark:border-slate-700 items-center gap-2 animate-float">
                 <Server size={16} className="text-brand-500" />
                 <span className="text-xs font-bold text-slate-700 dark:text-slate-200">Total Expert</span>
               </div>
-              <div className="absolute -left-4 bottom-20 bg-white dark:bg-slate-800 p-3 rounded-lg shadow-lg border border-slate-100 dark:border-slate-700 flex items-center gap-2 animate-float" style={{ animationDelay: '2s' }}>
+              <div className="hidden lg:flex absolute -left-4 bottom-20 bg-white dark:bg-slate-800 p-3 rounded-lg shadow-lg border border-slate-100 dark:border-slate-700 items-center gap-2 animate-float" style={{ animationDelay: '2s' }}>
                 <ShieldCheck size={16} className="text-green-500" />
                 <span className="text-xs font-bold text-slate-700 dark:text-slate-200">TCPA Compliant</span>
               </div>

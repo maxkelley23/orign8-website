@@ -4,10 +4,6 @@ import { BrowserRouter } from 'react-router-dom';
 import { Home } from '@/pages/Home';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 
-// Mock fetch for image generation API
-const mockFetch = vi.fn();
-global.fetch = mockFetch;
-
 // Wrapper component for tests
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <BrowserRouter>
@@ -21,22 +17,6 @@ describe('Home Page', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         vi.useFakeTimers({ shouldAdvanceTime: true });
-
-        // Default mock for image generation - return success with placeholder
-        mockFetch.mockResolvedValue({
-            ok: true,
-            json: () => Promise.resolve({
-                candidates: [{
-                    content: {
-                        parts: [{
-                            inlineData: {
-                                data: 'base64imagedata'
-                            }
-                        }]
-                    }
-                }]
-            })
-        });
     });
 
     afterEach(() => {
@@ -67,10 +47,10 @@ describe('Home Page', () => {
             expect(screen.getAllByText(/platform tour/i).length).toBeGreaterThan(0);
         });
 
-        it('renders Q4 cohort badge', () => {
+        it('renders hero badge', () => {
             render(<Home />, { wrapper: TestWrapper });
 
-            expect(screen.getByText(/now enrolling for q4 cohort/i)).toBeInTheDocument();
+            expect(screen.getByText(/built for the modern lender/i)).toBeInTheDocument();
         });
 
         it('CTA links navigate to correct pages', () => {
@@ -154,15 +134,6 @@ describe('Home Page', () => {
             render(<Home />, { wrapper: TestWrapper });
 
             expect(screen.getByText(/intelligent orchestration/i)).toBeInTheDocument();
-        });
-
-        it('shows loading spinners while images are generating', () => {
-            render(<Home />, { wrapper: TestWrapper });
-
-            // Loading spinners should be visible initially
-            // The images start with loadingImages state as true
-            const loadingSpinners = document.querySelectorAll('.animate-spin');
-            expect(loadingSpinners.length).toBeGreaterThan(0);
         });
     });
 
@@ -279,33 +250,6 @@ describe('Home Page', () => {
             await waitFor(() => {
                 expect(screen.getAllByText(/rates change daily/i).length).toBeGreaterThan(0);
             });
-        });
-    });
-
-    describe('Image Generation', () => {
-        it('calls API to generate background images on mount', async () => {
-            render(<Home />, { wrapper: TestWrapper });
-
-            // Wait for API calls to be made
-            await waitFor(() => {
-                expect(mockFetch).toHaveBeenCalled();
-            });
-
-            // Should call for 4 different background images
-            expect(mockFetch).toHaveBeenCalledWith(
-                '/api/generate-content',
-                expect.objectContaining({
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                })
-            );
-        });
-
-        it('handles image generation failure gracefully', async () => {
-            mockFetch.mockRejectedValue(new Error('API Error'));
-
-            // Should not throw
-            expect(() => render(<Home />, { wrapper: TestWrapper })).not.toThrow();
         });
     });
 

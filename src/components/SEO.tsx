@@ -10,10 +10,8 @@ interface SEOConfig {
     ogImage?: string;
 }
 
-const BASE_URL = 'https://orign8.app';
-// NOTE: For best social media compatibility, convert og-image.svg to PNG (1200x630)
-// Most platforms support PNG/JPG but not SVG for Open Graph images
-const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.svg`;
+const BASE_URL = 'https://orign8.ai';
+const DEFAULT_OG_IMAGE = `${BASE_URL}/og-image.png`;
 
 /**
  * Route-specific SEO metadata
@@ -34,6 +32,10 @@ const routeSEO: Record<string, SEOConfig> = {
     '/contact': {
         title: 'Contact | Get Started with Orign8',
         description: 'Book a demo and see how Orign8 Voice AI can transform your mortgage lead management. Discovery call, integration setup, and launch in days.',
+    },
+    '/privacy': {
+        title: 'Privacy Policy | Orign8',
+        description: 'Learn how Orign8 collects, uses, and protects your personal information. Our commitment to data security and TCPA compliance.',
     },
 };
 

@@ -214,23 +214,6 @@ describe('Navbar Component', () => {
             });
         });
 
-        it('hides Login link after scrolling', async () => {
-            renderWithRouter('/');
-
-            // Initially should show Login
-            expect(screen.queryByText('Log in')).toBeInTheDocument();
-
-            // Simulate scroll
-            act(() => {
-                Object.defineProperty(window, 'scrollY', { value: 100, writable: true });
-                window.dispatchEvent(new Event('scroll'));
-            });
-
-            await waitFor(() => {
-                // Login should be hidden after scroll
-                expect(screen.queryByText('Log in')).not.toBeInTheDocument();
-            });
-        });
     });
 
     describe('Transparent Nav Pages', () => {

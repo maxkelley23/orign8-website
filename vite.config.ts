@@ -1,3 +1,4 @@
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import path from 'path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -16,7 +17,7 @@ export default defineConfig({
   },
   build: {
     // Enable source maps for debugging (disable in production if needed)
-    sourcemap: false,
+    sourcemap: true,
     // Target modern browsers for smaller bundle
     target: 'es2020',
     // Chunk size warning threshold
@@ -56,19 +57,19 @@ export default defineConfig({
     // Minification settings
     minify: 'esbuild',
   },
-  plugins: [
-    react(),
-    // Bundle analyzer - generates stats.html after build
-    visualizer({
-      filename: 'dist/stats.html',
-      open: false,
-      gzipSize: true,
-      brotliSize: true,
-    }),
-  ],
+  plugins: [react(), // Bundle analyzer - generates stats.html after build
+  visualizer({
+    filename: 'dist/stats.html',
+    open: false,
+    gzipSize: true,
+    brotliSize: true,
+  }), sentryVitePlugin({
+    org: "elev8-growth-solutions-dba-ori",
+    project: "javascript-react"
+  })],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, '.'),
+      '@': path.resolve(__dirname, './src'),
     }
   },
   // Optimize dependency pre-bundling

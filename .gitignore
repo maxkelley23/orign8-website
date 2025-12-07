@@ -26,3 +26,9 @@ e2e-screenshots
 *.njsproj
 *.sln
 *.sw?
+
+# Sentry Config File
+.env.sentry-build-plugin
+
+# Claude Code cache
+.claude/

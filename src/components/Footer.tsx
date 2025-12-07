@@ -32,16 +32,16 @@ export const Footer: React.FC = () => {
           <div>
             <h3 className="text-slate-900 dark:text-white font-bold mb-4 text-sm uppercase tracking-wider">Company</h3>
             <ul className="space-y-3">
-              <li><Link to="#" onClick={(e) => e.preventDefault()} className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-sm transition-colors">About Us</Link></li>
+              <li><Link to="/about" className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-sm transition-colors">About Us</Link></li>
               <li><Link to="/contact" className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-sm transition-colors">Contact</Link></li>
               <li><Link to="#" onClick={(e) => e.preventDefault()} className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-sm transition-colors">Careers</Link></li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="text-slate-900 dark:text-white font-bold mb-4 text-sm uppercase tracking-wider">Legal</h3>
             <ul className="space-y-3">
-              <li><Link to="#" onClick={(e) => e.preventDefault()} className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-sm transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/privacy" className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-sm transition-colors">Privacy Policy</Link></li>
               <li><Link to="#" onClick={(e) => e.preventDefault()} className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-sm transition-colors">Terms of Service</Link></li>
             </ul>
           </div>
