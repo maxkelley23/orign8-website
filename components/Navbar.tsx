@@ -122,11 +122,6 @@ export const Navbar: React.FC = () => {
                  />
                </div>
              </button>
-             {!isScrolled && (
-               <Link to="/login" className={`text-sm font-medium px-3 ${linkColorClass}`}>
-                 Log in
-               </Link>
-             )}
             <Link to="/contact">
               <Button 
                 variant={ButtonVariant.PRIMARY} 
@@ -192,9 +187,6 @@ export const Navbar: React.FC = () => {
                 Book Demo
               </Button>
             </Link>
-            <div className="text-center">
-               <Link to="/login" className="text-sm font-medium text-slate-500 dark:text-slate-400 p-2" onClick={() => setIsMobileMenuOpen(false)}>Log In to Platform</Link>
-            </div>
           </div>
         </div>
       </div>
