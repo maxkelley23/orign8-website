@@ -217,7 +217,7 @@ describe('Home Page', () => {
             render(<Home />, { wrapper: TestWrapper });
 
             // Trust badges may appear multiple times
-            expect(screen.getAllByText(/soc2 compliant/i).length).toBeGreaterThan(0);
+            expect(screen.getAllByText(/tcpa compliant/i).length).toBeGreaterThan(0);
             expect(screen.getAllByText(/seamless crm sync/i).length).toBeGreaterThan(0);
             expect(screen.getAllByText(/no contract lock-in/i).length).toBeGreaterThan(0);
         });

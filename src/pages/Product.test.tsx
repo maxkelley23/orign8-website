@@ -144,10 +144,10 @@ describe('Product Page', () => {
             expect(totalExpertBadges.length).toBeGreaterThan(0);
         });
 
-        it('renders SOC2 Compliant badge', () => {
+        it('renders TCPA Compliant badge', () => {
             render(<Product />, { wrapper: TestWrapper });
 
-            expect(screen.getByText(/soc2 compliant/i)).toBeInTheDocument();
+            expect(screen.getByText(/tcpa compliant/i)).toBeInTheDocument();
         });
     });
 

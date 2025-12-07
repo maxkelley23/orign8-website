@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Users, Zap, Target, ArrowRight, Activity, Lock, Check, Sparkles } from 'lucide-react';
+import { Shield, Users, Zap, Target, ArrowRight, Lock, Check, Sparkles } from 'lucide-react';
 import { Button } from '../components/Button';
 
 export const About: React.FC = () => {
@@ -203,9 +203,6 @@ export const About: React.FC = () => {
                <div className="flex items-center justify-center gap-4 mb-8">
                   <div className="px-4 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300">
                      <Lock size={16} className="text-green-500" /> TCPA Compliant
-                  </div>
-                  <div className="px-4 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300">
-                     <Activity size={16} className="text-brand-500" /> SOC2 Type II
                   </div>
                </div>
                <p className="text-2xl font-medium text-slate-800 dark:text-slate-200 italic leading-relaxed">

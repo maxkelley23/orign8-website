@@ -475,7 +475,7 @@ export const Home: React.FC = () => {
 
               <div className="mt-16 pt-10 border-t border-white/10 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 animate-fade-in-up delay-400 opacity-80">
                 <div className="flex items-center gap-3 text-slate-300 font-medium">
-                  <div className="bg-green-500/20 p-1 rounded-full"><Check size={14} className="text-green-400" /></div> <span>SOC2 Compliant</span>
+                  <div className="bg-green-500/20 p-1 rounded-full"><Check size={14} className="text-green-400" /></div> <span>TCPA Compliant</span>
                 </div>
                 <div className="flex items-center gap-3 text-slate-300 font-medium">
                   <div className="bg-green-500/20 p-1 rounded-full"><Check size={14} className="text-green-400" /></div> <span>Seamless CRM Sync</span>

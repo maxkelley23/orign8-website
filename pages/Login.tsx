@@ -95,7 +95,6 @@ export const Login: React.FC = () => {
         
         <div className="mt-8 text-center">
           <p className="text-xs text-slate-400 dark:text-slate-500">
-            Protected by SOC2 Type II Security. <br/>
             Authorized personnel only.
           </p>
         </div>
